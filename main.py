@@ -164,7 +164,8 @@ if __name__ == "__main__":
 
     print(f"Generiere {number_of_runs} lösbare Startzustände...")
     start_states = [generate_random_solvable_state() for _ in range(number_of_runs)]
-
+    
+    # hier weise ich dem Dictionary heuristics die 2 Heuristischen Funktionen zu. 
     heuristics = {
         "Manhattan-Distanz": calculate_manhattan_distance,
         "Hamming-Distanz (Falsch positionierte Steine)": calculate_misplaced_tiles
