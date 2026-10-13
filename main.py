@@ -1,6 +1,7 @@
 import random
 import statistics
 import heapq
+import time  # Für die Zeitmessung
 
 # Globale Variable zum Zählen der Vergleiche (Zeitkomplexitäts-Ersatz)
 comparison_counter = 0
@@ -164,7 +165,7 @@ if __name__ == "__main__":
 
     print(f"Generiere {number_of_runs} lösbare Startzustände...")
     start_states = [generate_random_solvable_state() for _ in range(number_of_runs)]
-    
+
     # hier weise ich dem Dictionary heuristics die 2 Heuristischen Funktionen zu. 
     heuristics = {
         "Manhattan-Distanz": calculate_manhattan_distance,
@@ -172,19 +173,26 @@ if __name__ == "__main__":
     }
 
     # Ergebnisse speichern
-    results = {name: {"comparisons": [], "expanded": [], "stored": []} for name in heuristics}
+    results = {name: {"comparisons": [], "expanded": [], "stored": [], "time": []} for name in heuristics}
 
     print("Führe Experimente durch...")
     for heuristic_name, heuristic_func in heuristics.items():
         for start_state in start_states:
             # Frische Kopie des Startzustands für jeden Testlauf
             fresh_start = PuzzleState(start_state.board)
+            # Zeitmessung starten direkt vor dem Lösen
+            start_time = time.perf_counter()
             outcome = solve_puzzle(fresh_start, goal_state, heuristic_func)
+            # Zeitmessung stoppen direkt nach dem Lösen
+            end_time = time.perf_counter()
+            
+            elapsed_time = end_time - start_time
             
             if outcome["success"]:
                 results[heuristic_name]["comparisons"].append(outcome["comparisons"])
                 results[heuristic_name]["expanded"].append(outcome["expanded_nodes"])
                 results[heuristic_name]["stored"].append(outcome["stored_nodes"])
+                results[heuristic_name]["time"].append(elapsed_time)
 
     # --- 6. Auswertung (Mittelwert und Standardabweichung) ---
     print("\n" + "="*40)
@@ -196,4 +204,6 @@ if __name__ == "__main__":
         for measurement_name, values in measurements.items():
             mean_value = statistics.mean(values)
             std_deviation = statistics.stdev(values) if len(values) > 1 else 0.0
-            print(f"  - {measurement_name.capitalize()}: Mittelwert = {mean_value:.2f} | Standardabweichung = {std_deviation:.2f}")
+            # Kleine Formatierung für die Zeiteinheit (Sekunden)
+            unit = "Sekunden" if measurement_name == "time" else ""
+            print(f"  - {measurement_name.capitalize()}: Mittelwert = {mean_value:.6f} {unit} | Standardabweichung = {std_deviation:.6f} {unit}")
