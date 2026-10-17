@@ -23,16 +23,25 @@ class PuzzleState:
         
         # Mögliche Bewegungen der Leerstelle: Oben, Unten, Links, Rechts
         possible_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-
+        
+        #Die for-Schleife geht diese Liste nacheinander (Element für Element) durch:
+        #z.B.: Erster Durchlauf: row_change bekommt den Wert -1 (erste Zahl des Tupels).
+        #column_change bekommt den Wert 0 (zweite Zahl des Tupels).
+        
         for row_change, column_change in possible_directions:
+            #Python-Mehrfachassignment!
             new_row, new_col = row + row_change, col + column_change
             
             # Prüfen, ob die Bewegung innerhalb des 3x3 Feldes liegt
             if 0 <= new_row < 3 and 0 <= new_col < 3:
                 new_empty_index = new_row * 3 + new_col
                 
-                # Leerstelle mit dem Nachbarn vertauschen
+                # aus board_list eine list machen um sie zu verändern
                 board_list = list(self.board)
+                # In Python kann man zwei Variablen in einer einzigen Zeile blitzschnell die Werte tauschen lassen, 
+                # ohne eine Hilfsvariable zu brauchen. Das, was auf der rechten Seite steht 
+                # (board_list[new_empty_index], board_list[self.empty_index]), wird an die Positionen auf der linken Seite 
+                # geschrieben. Die Leerstelle und ihr Nachbar tauschen also einfach die Plätze!
                 board_list[self.empty_index], board_list[new_empty_index] = board_list[new_empty_index], board_list[self.empty_index]
                 
                 # Neuen Nachbar-Zustand erstellen
